@@ -14,7 +14,7 @@ def main() -> None:
         race_description = player_data["race"].get("description", "")
         race, _ = Race.objects.get_or_create(
             name=race_name,
-            defaults={"description": race_description}
+            defaults={"description": race_description},
         )
 
         # Gildia
@@ -22,7 +22,7 @@ def main() -> None:
         guild_description = player_data["guild"].get("description", "")
         guild, _ = Guild.objects.get_or_create(
             name=guild_name,
-            defaults={"description": guild_description}
+            defaults={"description": guild_description},
         )
 
         # Umiejętności
@@ -32,7 +32,7 @@ def main() -> None:
             skill_bonus = skill_data["bonus"]
             skill, _ = Skill.objects.get_or_create(
                 name=skill_name,
-                defaults={"bonus": skill_bonus, "race": race}
+                defaults={"bonus": skill_bonus, "race": race},
             )
             skills.append(skill)
 
@@ -43,8 +43,8 @@ def main() -> None:
                 "email": player_data["email"],
                 "bio": player_data["bio"],
                 "race": race,
-                "guild": guild
-            }
+                "guild": guild,
+            },
         )
 
 
