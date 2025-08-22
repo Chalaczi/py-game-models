@@ -4,16 +4,12 @@ from db.models import Race, Skill, Player, Guild
 
 def main() -> None:
     """Wczytuje dane z players.json i dodaje je do bazy danych."""
-    with open("players.json", "r", encoding="utf-8") as f:
+    with open("players.json", "r") as f:
         data = json.load(f)
 
     for player_data in data:
         # Tworzenie lub pobranie rasy
-        race_info = player_data.get("race")
-        if isinstance(race_info, dict):
-            race_name = race_info.get("name")
-        else:
-            race_name = str(race_info)
+        race_name = player_data["race"]  # traktujemy jako string
         race, _ = Race.objects.get_or_create(name=race_name)
 
         # Tworzenie lub pobranie gildii
@@ -27,25 +23,26 @@ def main() -> None:
             )
 
         # Tworzenie gracza
+        player_defaults = {
+            "race": race,
+            "guild": guild,
+            "level": player_data.get("level", 1),
+            "bio": player_data.get("bio", ""),
+        }
         player, _ = Player.objects.get_or_create(
-            nickname=player_data.get("nickname"),
-            defaults={
-                "race": race,
-                "guild": guild,
-                "level": player_data.get("level", 1),
-            },
+            nickname=player_data["nickname"],
+            defaults=player_defaults,
         )
 
-        # Tworzenie umiejętności
+        # Tworzenie umiejętności i przypisanie do rasy
         for skill_data in player_data.get("skills", []):
-            skill_name = skill_data.get("name")
-            power = skill_data.get("power", 0)
+            skill_name = skill_data["name"]
+            bonus = skill_data.get("bonus", 0)
             skill, _ = Skill.objects.get_or_create(
                 name=skill_name,
                 race=race,
-                defaults={"power": power},
+                defaults={"bonus": bonus},
             )
-            player.skills.add(skill)
 
 
 if __name__ == "__main__":
