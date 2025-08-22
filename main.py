@@ -8,11 +8,9 @@ def main() -> None:
         data = json.load(f)
 
     for player_data in data:
-        # Tworzenie lub pobranie rasy
         race_name = player_data["race"]
         race, _ = Race.objects.get_or_create(name=race_name)
 
-        # Tworzenie lub pobranie gildii
         guild_name = player_data.get("guild")
         guild = None
         if guild_name:
@@ -22,7 +20,6 @@ def main() -> None:
                 defaults={"description": guild_description},
             )
 
-        # Tworzenie gracza
         player_defaults = {
             "race": race,
             "guild": guild,
@@ -34,7 +31,6 @@ def main() -> None:
             defaults=player_defaults,
         )
 
-        # Tworzenie umiejętności i przypisywanie do gracza
         for skill_data in player_data.get("skills", []):
             skill_name = skill_data["name"]
             bonus = skill_data.get("bonus", "")
