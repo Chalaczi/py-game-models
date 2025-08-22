@@ -4,21 +4,16 @@ from db.models import Race, Skill, Player, Guild
 
 def main() -> None:
     """Wczytuje dane z players.json i dodaje je do bazy danych."""
-    with open("players.json", "r") as f:
+    with open("players.json", "r", encoding="utf-8") as f:
         data = json.load(f)
 
     for player_data in data:
-        # Jeśli player_data jest stringiem, ignorujemy go lub wypisujemy ostrzeżenie
-        if not isinstance(player_data, dict):
-            print(f"Nieprawidłowy format gracza: {player_data}")
-            continue
-
         # Tworzenie lub pobranie rasy
-        race_name = player_data.get("race")
-        if not race_name:
-            print(f"Gracz {player_data.get('nickname')} nie ma podanej rasy, pomijam.")
-            continue
-
+        race_info = player_data.get("race")
+        if isinstance(race_info, dict):
+            race_name = race_info.get("name")
+        else:
+            race_name = str(race_info)
         race, _ = Race.objects.get_or_create(name=race_name)
 
         # Tworzenie lub pobranie gildii
@@ -28,7 +23,7 @@ def main() -> None:
             guild_description = player_data.get("guild_description") or None
             guild, _ = Guild.objects.get_or_create(
                 name=guild_name,
-                defaults={"description": guild_description}
+                defaults={"description": guild_description},
             )
 
         # Tworzenie gracza
@@ -43,14 +38,7 @@ def main() -> None:
 
         # Tworzenie umiejętności
         for skill_data in player_data.get("skills", []):
-            if not isinstance(skill_data, dict):
-                print(f"Nieprawidłowy format umiejętności dla gracza {player.nickname}: {skill_data}")
-                continue
-
             skill_name = skill_data.get("name")
-            if not skill_name:
-                continue
-
             power = skill_data.get("power", 0)
             skill, _ = Skill.objects.get_or_create(
                 name=skill_name,
