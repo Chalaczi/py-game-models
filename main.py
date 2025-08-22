@@ -27,6 +27,7 @@ def main() -> None:
             "race": race,
             "guild": guild,
             "bio": player_data.get("bio", ""),
+            "email": player_data["email"],
         }
         player, _ = Player.objects.get_or_create(
             nickname=player_data["nickname"],
@@ -39,6 +40,7 @@ def main() -> None:
             bonus = skill_data.get("bonus", "")
             skill, _ = Skill.objects.get_or_create(
                 name=skill_name,
+                race=race,
                 defaults={"bonus": bonus},
             )
             player.skills.add(skill)
