@@ -1,46 +1,34 @@
 import json
-from db.models import Race, Skill, Player, Guild
+from db.models import Race, Guild, Skill, Player
 
-
-def main() -> None:
-    """Wczytuje dane z players.json i dodaje je do bazy danych."""
+def main():
     with open("players.json", "r", encoding="utf-8") as f:
         data = json.load(f)
 
     for player_data in data:
-        race_name = player_data["race"]
-        race, _ = Race.objects.get_or_create(name=race_name)
-
+        race, _ = Race.objects.get_or_create(name=player_data["race"])
         guild_name = player_data.get("guild")
+        guild_desc = player_data.get("guild_description", "")
         guild = None
         if guild_name:
-            guild_description = player_data.get("guild_description") or None
-            guild, _ = Guild.objects.get_or_create(
-                name=guild_name,
-                defaults={"description": guild_description},
-            )
+            guild, _ = Guild.objects.get_or_create(name=guild_name, defaults={"description": guild_desc})
 
-        player_defaults = {
-            "race": race,
-            "guild": guild,
-            "bio": player_data.get("bio", ""),
-            "email": player_data["email"],
-        }
         player, _ = Player.objects.get_or_create(
             nickname=player_data["nickname"],
-            defaults=player_defaults,
+            defaults={
+                "email": player_data["email"],
+                "bio": player_data.get("bio", ""),
+                "race": race,
+                "guild": guild
+            }
         )
 
         for skill_data in player_data.get("skills", []):
-            skill_name = skill_data["name"]
-            bonus = skill_data.get("bonus", "")
             skill, _ = Skill.objects.get_or_create(
-                name=skill_name,
-                race=race,
-                defaults={"bonus": bonus},
+                name=skill_data["name"],
+                defaults={
+                    "bonus": skill_data.get("bonus", ""),
+                    "race": race
+                }
             )
             player.skills.add(skill)
-
-
-if __name__ == "__main__":
-    main()
