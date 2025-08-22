@@ -18,7 +18,8 @@ def main() -> None:
         if guild_name:
             guild_description = player_data.get("guild_description") or None
             guild, _ = Guild.objects.get_or_create(
-                name=guild_name, defaults={"description": guild_description}
+                name=guild_name,
+                defaults={"description": guild_description},
             )
 
         # Tworzenie gracza
@@ -36,7 +37,10 @@ def main() -> None:
         for skill_data in player_data.get("skills", []):
             skill_name = skill_data["name"]
             bonus = skill_data.get("bonus", "")
-            skill, _ = Skill.objects.get_or_create(name=skill_name, defaults={"bonus": bonus})
+            skill, _ = Skill.objects.get_or_create(
+                name=skill_name,
+                defaults={"bonus": bonus},
+            )
             player.skills.add(skill)
 
 
