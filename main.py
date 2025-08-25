@@ -7,13 +7,12 @@ from db.models import Race, Guild, Skill, Player
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 django.setup()
 
+
 def main() -> None:
     """Wczytuje dane z players.json i dodaje je do bazy danych."""
     with open("players.json", "r", encoding="utf-8") as f:
         data = json.load(f)
 
-    # Poprawka: Iteruj po kluczach i wartościach jednocześnie,
-    # aby mieć dostęp do nickname'u
     for nickname, player_data in data.items():
         race_data = player_data.get("race")
         race_name = race_data.get("name")
@@ -42,7 +41,7 @@ def main() -> None:
             skill_objects.append(skill)
 
         player, created = Player.objects.get_or_create(
-            nickname=nickname, # Użyj klucza z pętli jako nickname
+            nickname=nickname,
             defaults={
                 "email": player_data["email"],
                 "bio": player_data.get("bio", ""),
