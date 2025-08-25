@@ -7,29 +7,32 @@ from db.models import Race, Guild, Skill, Player
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 django.setup()
 
-
 def main() -> None:
     """Wczytuje dane z players.json i dodaje je do bazy danych."""
     with open("players.json", "r", encoding="utf-8") as f:
         data = json.load(f)
 
-    for player_data in data:
-        race_name = player_data.get("race")
-        race_description = player_data.get("race_description", "")
+    # Poprawka: Iteruj po kluczach i wartościach jednocześnie,
+    # aby mieć dostęp do nickname'u
+    for nickname, player_data in data.items():
+        race_data = player_data.get("race")
+        race_name = race_data.get("name")
+        race_description = race_data.get("description", "")
         race, _ = Race.objects.get_or_create(
             name=race_name, defaults={"description": race_description}
         )
 
-        guild_name = player_data.get("guild")
-        guild_description = player_data.get("guild_description", None)
+        guild_data = player_data.get("guild")
         guild = None
-        if guild_name:
+        if guild_data:
+            guild_name = guild_data.get("name")
+            guild_description = guild_data.get("description", None)
             guild, _ = Guild.objects.get_or_create(
                 name=guild_name, defaults={"description": guild_description}
             )
 
         skill_objects = []
-        for skill_info in player_data.get("skills", []):
+        for skill_info in race_data.get("skills", []):
             skill_name = skill_info.get("name")
             skill_bonus = skill_info.get("bonus", "")
             skill, _ = Skill.objects.get_or_create(
@@ -39,7 +42,7 @@ def main() -> None:
             skill_objects.append(skill)
 
         player, created = Player.objects.get_or_create(
-            nickname=player_data["nickname"],
+            nickname=nickname, # Użyj klucza z pętli jako nickname
             defaults={
                 "email": player_data["email"],
                 "bio": player_data.get("bio", ""),
