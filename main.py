@@ -1,14 +1,15 @@
 import json
 import os
 import django
+from db.models import Race, Guild, Skill, Player
 
+# Konfiguracja Django, jeśli uruchamiasz plik niezależnie
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 django.setup()
 
-from db.models import Race, Guild, Skill, Player
-
 
 def main() -> None:
+    """Wczytuje dane z players.json i dodaje je do bazy danych."""
     with open("players.json", "r", encoding="utf-8") as f:
         data = json.load(f)
 

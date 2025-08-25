@@ -44,25 +44,24 @@ def test_races(populate_db):
         ("elf", "The magic race"),
         ("human", "Human race"),
     ]
-
     related_field = (
-            Skill._meta.get_field("race").remote_field.related_name or "skill_set"
+        Skill._meta.get_field("race").remote_field.related_name or "skill_set"
     )
 
     assert list(
         getattr(Race.objects.get(name="elf"), related_field).values_list("name")
     ) == [
-               ("Teleportation",),
-               ("Reality Warping",),
-           ]
+        ("Teleportation",),
+        ("Reality Warping",),
+    ]
 
     assert (
-            list(
-                getattr(Race.objects.get(name="human"), related_field).values_list(
-                    "name", "bonus"
-                )
+        list(
+            getattr(Race.objects.get(name="human"), related_field).values_list(
+                "name", "bonus"
             )
-            == []
+        )
+        == []
     )
 
 
@@ -73,12 +72,12 @@ def test_players(populate_db):
             "nickname", "email", "bio", "race__name", "guild__name"
         )
     ) == [
-               ("john", "john@gmail.com", "Hello, I'm John, elf ranger", "elf", "archers"),
-               ("max", "max@gmail.com", "Hello, I'm Max, elf mag", "elf", "mags"),
-               ("arthur", "arthur@gmail.com", "Arthur, elf mag", "elf", "mags"),
-               ("andrew", "andrew@gmail.com", "Hello, I'm Andrew", "human", "blacksmiths"),
-               ("nick", "nick@gmail.com", "Hello, I'm Nick", "human", None),
-           ]
+        ("john", "john@gmail.com", "Hello, I'm John, elf ranger", "elf", "archers"),
+        ("max", "max@gmail.com", "Hello, I'm Max, elf mag", "elf", "mags"),
+        ("arthur", "arthur@gmail.com", "Arthur, elf mag", "elf", "mags"),
+        ("andrew", "andrew@gmail.com", "Hello, I'm Andrew", "human", "blacksmiths"),
+        ("nick", "nick@gmail.com", "Hello, I'm Nick", "human", None),
+    ]
 
 
 @pytest.mark.django_db
